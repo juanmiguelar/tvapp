@@ -1,0 +1,24 @@
+type Author {
+  name: String!
+  email: String!
+}
+
+type News {
+  id: ID!
+  title: String!
+  content: String!
+  author: Author!
+}
+
+type Query {
+  getNews: [News!]!
+}
+
+type Mutation {
+  createNews(
+    title: String!
+    content: String!
+    authorName: String!
+    authorEmail: String!
+  ): News!
+}
