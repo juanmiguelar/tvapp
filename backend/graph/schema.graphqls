@@ -21,4 +21,15 @@ type Mutation {
     authorName: String!
     authorEmail: String!
   ): News!
+
+  updateNews(
+    id: ID!
+    title: String
+    content: String
+    authorName: String
+    authorEmail: String
+  ): News!
+
+  deleteNews(id: ID!): Boolean!
 }
+

@@ -11,7 +11,7 @@ type Mutation struct {
 }
 
 type News struct {
-	ID      string  `json:"id"`
+	ID      string  `json:"id" bson:"_id"`
 	Title   string  `json:"title"`
 	Content string  `json:"content"`
 	Author  *Author `json:"author"`

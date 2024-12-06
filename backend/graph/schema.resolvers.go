@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"log"
 	"tvapp-backend/database"
 	"tvapp-backend/graph/model"
@@ -36,6 +37,71 @@ func (r *mutationResolver) CreateNews(ctx context.Context, title string, content
 	}
 
 	return &news, nil
+}
+
+// UpdateNews is the resolver for the updateNews field.
+func (r *mutationResolver) UpdateNews(ctx context.Context, id string, title *string, content *string, authorName *string, authorEmail *string) (*model.News, error) {
+	collection := database.Client.Database("tvapp_db").Collection("news")
+
+	// Convert id from string to ObjectId
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.New("invalid id format")
+	}
+	// Prepare the fields to update
+	updateFields := bson.M{}
+	if title != nil {
+		updateFields["title"] = *title
+	}
+	if content != nil {
+		updateFields["content"] = *content
+	}
+	if authorName != nil || authorEmail != nil {
+		updateFields["author"] = bson.M{}
+		if authorName != nil {
+			updateFields["author"].(bson.M)["name"] = *authorName
+		}
+		if authorEmail != nil {
+			updateFields["author"].(bson.M)["email"] = *authorEmail
+		}
+	}
+
+	log.Printf("%s id", id)
+	// Update the document in MongoDB
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$set": updateFields}
+	_, err = collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve and return the updated document
+	var updatedNews model.News
+	err = collection.FindOne(ctx, filter).Decode(&updatedNews)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedNews, nil
+}
+
+// DeleteNews is the resolver for the deleteNews field.
+func (r *mutationResolver) DeleteNews(ctx context.Context, id string) (bool, error) {
+	collection := database.Client.Database("tvapp_db").Collection("news")
+	// Convert id from string to ObjectId
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.New("invalid id format")
+	}
+	// Delete the document
+	filter := bson.M{"_id": objectID}
+	result, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+
+	// Check if a document was actually deleted
+	return result.DeletedCount > 0, nil
 }
 
 // GetNews retrieves all news from the MongoDB collection
