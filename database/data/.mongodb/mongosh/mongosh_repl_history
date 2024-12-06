@@ -1,2 +1,0 @@
-db.news.find().pretty();
-use tvapp_db;
