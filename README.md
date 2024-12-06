@@ -211,5 +211,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Authors
 
-- [Your Name](https://github.com/your-username)
-- Contributions by [Other Developers]
+- JUAN MIGUEL ARIAS MEJIAS
