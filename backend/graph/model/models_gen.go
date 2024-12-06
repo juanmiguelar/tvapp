@@ -2,20 +2,22 @@
 
 package model
 
-type Author struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
 
 type Mutation struct {
 }
 
-type News struct {
-	ID      string  `json:"id" bson:"_id"`
-	Title   string  `json:"title"`
-	Content string  `json:"content"`
-	Author  *Author `json:"author"`
-}
 
 type Query struct {
+}
+
+type Author struct {
+	Name  string `json:"name" bson:"name"`
+	Email string `json:"email" bson:"email"`
+}
+
+type News struct {
+	ID      string  `json:"id" bson:"_id"`
+	Title   string  `json:"title" bson:"title"`
+	Content string  `json:"content" bson:"content"`
+	Author  *Author `json:"author" bson:"author"`
 }

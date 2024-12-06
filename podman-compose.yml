@@ -4,7 +4,7 @@ services:
   mongodb:
     build:
       context: ./database
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Make sure the Dockerfile exists here
     container_name: tvapp_mongodb
     restart: unless-stopped
     ports:
@@ -12,19 +12,28 @@ services:
     volumes:
       - ./database/data:/data/db
     env_file: 
-      - .env # Load environment variables for MongoDB
+      - .env
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Ensure a Dockerfile exists in ./backend
     container_name: tvapp_backend
     restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
-    - mongodb
+      - mongodb
     env_file:
-    - .env  # Root-level .env file
+      - .env
     volumes:
-    - .env:/app/.env  # Dynamically mount the root .env file
+      - .env:/app/.env
+
+  frontend:
+    build:
+      context: ./frontend/tvapp-frontend
+      dockerfile: Dockerfile  # Ensure a Dockerfile exists in ./tvapp-frontend
+    container_name: tvapp_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"

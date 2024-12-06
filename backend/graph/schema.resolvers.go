@@ -19,9 +19,12 @@ import (
 func (r *mutationResolver) CreateNews(ctx context.Context, title string, content string, authorName string, authorEmail string) (*model.News, error) {
 	collection := database.Client.Database("tvapp_db").Collection("news")
 
-	// Create a new news object
+	// Generate a new ObjectID
+	objectID := primitive.NewObjectID()
+
+	// Create a new news object with MongoDB's ObjectID as the _id
 	news := model.News{
-		ID:      primitive.NewObjectID().Hex(),
+		ID:      objectID.Hex(), // Convert ObjectID to string for the GraphQL response
 		Title:   title,
 		Content: content,
 		Author: &model.Author{
@@ -30,14 +33,23 @@ func (r *mutationResolver) CreateNews(ctx context.Context, title string, content
 		},
 	}
 
-	// Insert into MongoDB
-	_, err := collection.InsertOne(ctx, news)
+	// Insert the news object into MongoDB
+	_, err := collection.InsertOne(ctx, bson.M{
+		"_id":     objectID, // Use the ObjectID directly in MongoDB
+		"title":   news.Title,
+		"content": news.Content,
+		"author": bson.M{
+			"name":  news.Author.Name,
+			"email": news.Author.Email,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &news, nil
 }
+
 
 // UpdateNews is the resolver for the updateNews field.
 func (r *mutationResolver) UpdateNews(ctx context.Context, id string, title *string, content *string, authorName *string, authorEmail *string) (*model.News, error) {
