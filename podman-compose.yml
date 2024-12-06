@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongodb:
@@ -8,8 +8,23 @@ services:
     container_name: tvapp_mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017" 
+      - "27017:27017"
     volumes:
-      - ./database/data:/data/db 
+      - ./database/data:/data/db
     env_file: 
-      - .env
+      - .env # Load environment variables for MongoDB
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tvapp_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+    - mongodb
+    env_file:
+    - .env  # Root-level .env file
+    volumes:
+    - .env:/app/.env  # Dynamically mount the root .env file

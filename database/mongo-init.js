@@ -44,3 +44,14 @@ db.news.insertMany([
         }
     }
 ]);
+
+db = db.getSiblingDB("admin"); // Switch to the admin database
+
+db.createUser({
+    user: user,
+    pwd: password, // Use the same password as in your .env
+    roles: [
+        { role: "userAdminAnyDatabase", db: "admin" },
+        { role: "readWriteAnyDatabase", db: "admin" }
+    ]
+});
